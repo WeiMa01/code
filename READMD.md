@@ -23,6 +23,15 @@
 专业技能：  
 掌握 c， c++, python 等编程语言。  
 熟悉 transformer decoder 类型模型结构以及这些模型推理过程，如OPT， llama等。  
-熟悉 llm的profile方法，通过torch.profile 以及nsight system 等工具研究模型推理性能， 找出模型推断的瓶颈等。  
+熟悉 llm的profile方法，通过torch.profile 以及nsight system 等工具研究模型推理性能， 找出模型推断的瓶颈等。   
+熟悉 pytorch 框架，有丰富的模型推理以及部署经验。  
+项目经验  
+OPT模型调用 推理加速  
+* 背景
+* 思路
+  
+量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。  
+模型量化之后，压缩保存算法研究。  
+重构量化framwork 结构设计。  
 
 
