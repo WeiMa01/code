@@ -40,16 +40,4 @@
   
 **重构量化framwork 结构设计。**  
 * 背景  
-   + 为了更加方便的完成最新量化算法的研究以及实验，需要对旧版本的量化仓库进行重构，完成模型量化后的精度要求。
-  
-* 思路
-  + 设计framwork的结构，主要包含profile，Quantization，evaluation三大模块，profile是在量化之前抓取模型数据的特征，以便在量化的时候直接使用，包含对于weight和激活量化特征的提取。量化是模型weight 量化的具体实现，主流方法有RTN和GPTQ.量化后模型需要通过评估函数即 evaluation模块完成量化精度的评估，目前主流方法是GPTQ evaluation 和 lm_eval_harness.对于量化模块，通过Python 注册机制设计，将不同量化算法封装成一个类，入参是模型，校验数据集等，通过循环遍历，完成不同算法的组合执行。  
-**SqueezeLLM 算法研究**
-* 背景  
-   + 验证Sqeezellm 量化算法的精度。
-* 思路
-   + 研究论文，看懂SqeezeLLM的方法和原理。SqeezeLLM是将普通weight分成 dense and sparse tensor, 其中sparse tensor 包含两部分值，0.4%的离群值和0.05%的敏感值
-
-**量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。**     
-
-**模型量化之后，压缩保存算法研究。**   
+   
