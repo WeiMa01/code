@@ -48,9 +48,15 @@
 * 背景  
    + 验证Sqeezellm 量化算法的精度。
 * 思路
-   + 研究论文，看懂SqeezeLLM的方法和原理。SqeezeLLM是将普通weight分成 dense and sparse tensor, 其中sparse tensor 包含两部分值，0.4%的离群值和0.05%的敏感值
+   + 研究论文，看懂SqeezeLLM的方法和原理。SqeezeLLM是将普通weight分成 dense和sparse tensor, 其中sparse tensor 包含两部分值，0.4%的离群值和0.05%的敏感值（敏感值来自于海森矩阵算法）， 剩余的weight 属于dense tensor，对于sparse tensor 保持高精度，不参与量化（没有量化损失）， 对于dense tensor进行常规量化。通过这种方法提升量化的精度。将论文代码实现在了量化framwork中，并复现了论文中的精度。同时为了探究离群值和 敏感值对模型精度的影响，做了很多对比实验。此方法可以提升精度，但是没法解决性能以及存储问题，会增加额外的计算和存储空间。
 
 **量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。**     
-
-**模型量化之后，压缩保存算法研究。**   
+* 背景
+   + xxx 自己提出了舍入截断误差补偿的方法（round and Truncation error compensation:RTEC）提升模型量化精度，此方法是在量化模型过程中，保存模型量化时候的舍入误差和截断误差（对于模型wieght,为了不引入大量的内存开销，只保留1% channel的误差，选择标准是离群值的占比）对于模型精度提升很有效果，但是会引入额外的计算。为了量化引入的计算量，我们需要寻找int4 计算kernel，并作出优化，计算带RTEC的数据。在此过程中，改写过cutlass kernel， 适配RTEC的计算。
+**模型量化之后，压缩保存算法研究。**
+* 背景
+   + 在模型量化之后，我们需要保存模型weight，变成语言（如Python）不支持int4 数据类型，一般情况下int4数据是保存在FP16数据结构中，这样实际量化后模型大小和原始模型大小几乎没有变化，急需研究方法保存int4数据。
+* 思路
+  + 通过调研其他framwork的数据存储方式，选用uint32存储量化后的int4或者int8数据。即一个uint32存储8个int4,或者一个uint32存储4个int8的数据。
+  + 
    
