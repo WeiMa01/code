@@ -30,7 +30,7 @@ OPT模型分析以及推理加速
 * 背景
     + 近年来，Large Language Model(LLM)发展很快，是未来学术界以及科技界发展的主流趋势,LLM的训练成本高，对于软硬件要求较高，普通公司很难有机会在模型训练上有所成就。但是大模型推断相对简单，san *公司认为在大模型推断领域，xx硬件可能会有很大的加速空间，所以我们需要调研大模型结构以及推理过程，集成xxx完成加速。 
 *思路  
-    + xxx的特征是可以对GEMV操作加速，主要原理是在xxx中添加算子，减少数据从内存搬移到累加器的时间。针对这个特征，我们需要分析大模型的结构，找出GEMV操作计算的模块，调用。。。接口完成计算。首先使用torch.profile 和 nsightSystem 工具去分析模型中的算子，以及占比。通过分析多个模型，发现OPT模型gemv 操作占比较多，gemv操作主要集中在模型attention 中的create q_proj, k_proj，v_proj, o_proj, 以及MLP中的 gate_proj,up_proj, down_proj 中linear的操作中。
+    + xxx的特征是可以对GEMV操作加速，主要原理是在xxx中添加算子，减少数据从内存搬移到累加器的时间。针对这个特征，我们需要分析大模型的结构，找出GEMV操作计算的模块，调用。。。接口完成计算。首先使用torch.profile 和 nsightSystem 工具去分析模型中的算子，以及占比。通过分析多个模型，发现OPT模型gemv 操作占比较多，gemv操作主要集中在模型attention 中的create q_proj, k_proj，v_proj, o_proj, 以及MLP中的 gate_proj,up_proj, down_proj 中torch.nn.linear计算中。在模型结构中调用torch.nn.linear部分
   
 量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。  
 模型量化之后，压缩保存算法研究。  
