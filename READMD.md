@@ -16,7 +16,7 @@
 * 讲解c++基础语法知识，以及简单的数据结构和算法相关内容。
 西安三星电子研究所， 职员 
 * 负责大模型结构分析，以及利用xxx-xxx 硬件给大模型推断加速的可能性。xxx硬件是可以加速普通GEMV计算，可以提升性能2.x. 通过分析OPT模型，发现decoder阶段，模型中GEMV计算比例超过百分之六十，xxx 存在加速的可能性。找到模型中gemv计算模块，用xxx硬件接口替换torch的接口。验证性能，完成了1.5x~1.9x 的性能加速。  
-* 负责量化算法研究， 分析过SqueezeLLM算法思想，并成功应用到 xxx 项目组量化仓库中，提升了大模型量化的精度。SqueezeLLM是通过海森矩阵确定模型结构中weight的敏感度，将敏感值高的weight量化为高bit, 将敏感值低的weight量化为低bit。分别用不同的tensor存储高bit和低bit的weight。此算法可以提升模型量化之后的精度，但是会带来计算上性能的下降。
+* 负责量化算法研究， 分析过SqueezeLLM算法思想，并成功应用到 xxx 项目组量化仓库中，提升了大模型量化的精度。SqueezeLLM是通过海森矩阵确定模型结构中weight的敏感度，将敏感值高的weight量化为高bit或者不量化, 将敏感值低的weight量化为低bit。分别用不同的tensor存储高bit和低bit的weight。此算法可以提升模型量化之后的精度，但是会带来计算上性能的下降。
 * 负责xxx项目组量化仓库的重构。为了做量化精度提升的实验，以前的量化framework集成了很多量化算法，对于framework结构没有统一的定义，xxx组成员各自按照自己的思路集成不同的量化方法。为了统一量化framwork的结构，并且易于集成新的量化算法到framwork中，重新设计了需求文档以及软件设计文档。重构了量化仓库。个人完成了其中百分之八十的工作量。重构量化framwork包含smooth， rotation，GPTQ，RTN, 以及xxx自己提出的block wise rotation，RTEC(round and Truncation error compensation)等量化功能。完成了量化后weight 压缩功能，用uint32数据而机构存储量化后的weight。（如一个uint32 存储4个int8 数据类型，或者一个uint32 存储八个int4 数据）。   
 * executorch 二次开发， 2025年 xxx新的任务是将量化后的小模型运行在三*手机端，通过调研，xxx选择以ExecuTorch作为framwork，将量化仓库生成的量化后模型，加载到Executorch端，生成pte文件，在s24手机端完成推断。ExecuTorch支持w4A8量化和rotation功能。 为了适配 xxx自己的量化算法，修改ExecuTorch Llama 模型结构，增加了 rotation without fuse layerNorm 和 block wise rotation 功能。
 
@@ -26,7 +26,7 @@
 熟悉 llm的profile方法，通过torch.profile 以及nsight system 等工具研究模型推理性能， 找出模型推断的瓶颈等。   
 熟悉 pytorch 框架，有丰富的模型推理以及部署经验。  
 项目经验  
-OPT模型分析以及推理加速  
+**OPT模型分析以及推理加速**  
 * 背景
     + 近年来，Large Language Model(LLM)发展很快，是未来学术界以及科技界发展的主流趋势,LLM的训练成本高，对于软硬件要求较高，普通公司很难有机会在模型训练上有所成就。但是大模型推断相对简单，san *公司认为在大模型推断领域，xx硬件可能会有很大的加速空间，所以我们需要调研大模型结构以及推理过程，集成xxx完成加速。 
 *思路  
@@ -36,9 +36,20 @@ OPT模型分析以及推理加速
     + DP 数据并行 每个服务器单独处理各自数据，最后有需要的时候汇总。
     + TP 模型并行 将大的tensor切分为小的tensor，放在不同GPU，每个GPU算结果的不同部分，最后累加得到结果。
     + PP 流水线并行 将大模型不同层放在不同的服务器上，每个层即服务器的输出是下一个服务器的输入。
+    + 分析过nccl 源码， 为了找出 deepspeed 多卡TP 过程中， 通信时间较长的原因。
   
-量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。  
-模型量化之后，压缩保存算法研究。  
-重构量化framwork 结构设计。  
+**重构量化framwork 结构设计。**  
+* 背景  
+   + 为了更加方便的完成最新量化算法的研究以及实验，需要对旧版本的量化仓库进行重构，完成模型量化后的精度要求。
+  
+* 思路
+  + 设计framwork的结构，主要包含profile，Quantization，evaluation三大模块，profile是在量化之前抓取模型数据的特征，以便在量化的时候直接使用，包含对于weight和激活量化特征的提取。量化是模型weight 量化的具体实现，主流方法有RTN和GPTQ.量化后模型需要通过评估函数即 evaluation模块完成量化精度的评估，目前主流方法是GPTQ evaluation 和 lm_eval_harness.对于量化模块，通过Python 注册机制设计，将不同量化算法封装成一个类，入参是模型，校验数据集等，通过循环遍历，完成不同算法的组合执行。  
+**SqueezeLLM 算法研究**
+* 背景  
+   + 验证Sqeezellm 量化算法的精度。
+* 思路
+   + 研究论文，看懂SqeezeLLM的方法和原理。SqeezeLLM是将普通weight分成 dense and sparse tensor, 其中sparse tensor 包含两部分值，0.4%的离群值和0.05%的敏感值
 
+**量化算法研究 RTEC功能的实现以及底层 int4kernel的调用。**     
 
+**模型量化之后，压缩保存算法研究。**   
