@@ -1,62 +1,95 @@
+#include <iostream>
+#include <vector>
+using namespace std;
 
 class Solution {
-public:
-    int trap(vector<int>& height) {
-        //双指针，left 表示左边界，right 表示右边界，中间有凹进去的就可以存储雨水
-        // left记录最高的位置,如果有高于当前left的柱子，则left++;如果有低于left的柱子，则left不懂。后面有高于left的柱子，则计算中间的雨水。
-        int left =0, right = 1, num=0;
-        int length = height.size();
-        cout << "length: " << length << endl;
-        while(left < length && right < length){
-            cout <<" left: " << left <<"  right: "<< right << endl;
-            
-            if(right - left == 1 ){
-                if(height[right] >= height[left]){
-                    left ++;
-                    right++;
-                }else{
-                    right++;
-                }
-                continue;
+private:
+int stack_m[300], stack_n[300],top = 0;
+    void dfs(vector<vector<char>>& grid, int a, int b) {
+        int m = grid.size();
+        int n = grid[0].size();
+        cout << "m,n:  " << m << "  "<< n <<endl;
+        top = 0;
+        stack_m[top] = a;
+        stack_n[top] = b;
+        top++;
+        while(top-1 >=0){
+            int top_m = stack_m[top-1];
+            int top_n = stack_n[top-1];
+            top--;
+            if(top_m-1 >=0 && grid[top_m-1][top_n] == '1'){
+                cout << "a-1 >=0 && grid[a-1][b] == 1:  " << top_m-1 << "  "<< top_n <<endl;
+                grid[top_m-1][top_n] = '0';
+                stack_m[top] = top_m -1;
+                stack_n[top] = top_n;
+                top++;
             }
-            // 找大于的点，中间可以存雨水
-            while (right < length)
-            {
-                // cout <<" left: " << left <<"  right: "<< right << endl;
-                if(height[right] < height[left]){
-                    right ++;
-                }else{
-                    cout <<"计算雨水的 left: " << left <<"  right: "<< right << endl;
-                    //height[right] >= height[left]
-                    //计算雨水量
-                    int i = left +1;
-                    while(i < right){
-                        num = num + (height[left] - height[i]); 
-                        i++;
-                    }
-                    left = right;
-                    right ++;
-                    break;
-                }   
-            }  
-            if (right == length){
-                // left++;
-                // right = left + 1;
-                cout <<" right == length 计算雨水的 left: " << left <<"  right: "<< right << endl;
-                if (height[left] >= height[right-1]){
-                    cout <<"计算雨水的 left: " << left <<"  right: "<< right << endl;
-                    //height[right] >= height[left]
-                    //计算雨水量
-                    int i = left +1;
-                    while(i < right){
-                        num = num + (height[right-1] - height[i]); 
-                        i++;
-                    }
-                    left ++;
-                    right = left + 1;
-                }
-            } 
+            if(top_m+1 <m && grid[top_m+1][top_n] == '1'){
+                cout << "a-1 >=0 && grid[a-1][b] == 1:  " << top_m-1 << "  "<< top_n <<endl;
+                grid[top_m+1][top_n] = '0';
+                stack_m[top] = top_m +1;
+                stack_n[top] = top_n;
+                top++;
+            }
+
+            if(top_n-1 >=0 && grid[top_m][top_n-1] == '1'){
+                cout << "a-1 >=0 && grid[a-1][b] == 1:  " << top_m-1 << "  "<< top_n <<endl;
+                grid[top_m][top_n-1] = '0';
+                stack_m[top] = top_m;
+                stack_n[top] = top_n-1;
+                top++;
+            }
+
+            if(top_n+1 < n && grid[top_m][top_n+1] == '1'){
+                cout << "a-1 >=0 && grid[a-1][b] == 1:  " << top_m-1 << "  "<< top_n <<endl;
+                grid[top_m][top_n+1] = '0';
+                stack_m[top] = top_m;
+                stack_n[top] = top_n+1;
+                top++;
+            }
         }
-        return num;
+
     }
-};
+
+public:
+    int numIslands(vector<vector<char>>& grid) {
+            int m = grid.size();
+            if (m == 0){
+                return 0;
+            }
+            int n = grid[0].size();
+            int landNum = 0;
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (grid[i][j] == '1'){
+                        landNum ++;
+                        grid[i][j] = '0';
+                        dfs(grid, i, j);
+                    }
+                }
+                
+            }
+            return landNum;
+        }
+    };
+
+int main()
+{
+
+    vector<vector<char>> grid = {
+                                {'1','1','0','0','0'},
+                                {'1','1','0','0','0'},
+                                {'0','0','1','0','0'},
+                                {'0','0','0','1','1'}
+                                };
+
+    Solution solution;
+    int result = solution.numIslands(grid);
+    cout << "result: " << result << endl;
+    // for (int i = 0; i < result; i++) {
+    //     cout << nums[i] << "   ";
+    // }
+    return 0;
+}
