@@ -1,66 +1,126 @@
-struct Voew{
-    char val;
-    int index;
-};
-
 class Solution {
 public:
     string sortVowels(string s) {
         int n = s.size(),m;
-        vector<Voew> v;
+        vector<int> index;
+        unordered_map<char, int> voew_num;
         for (int i = 0; i < n; i++)
         {
-            if(s[i] == 'a' || s[i] == 'e' || s[i] == 'i' || s[i] == 'o' || s[i] == 'u' ||s[i] == 'A' || s[i] == 'E' || s[i] == 'I' || s[i] == 'O' || s[i] == 'U'){
-                v.push_back({s[i], i});
-            }
-        }
-        // for(vector<Voew>::iterator iter = v.begin(); iter != v.end();iter++){
-        //     cout << (iter->val) << ":" << (iter->index) << " ";
-        // }
-        // cout << endl;
-
-        m = v.size();
-        // 选择排序
-        // for (int i = 0; i < m; i++){
-        //     for (int j = i+1; j < m; j++){
-        //         if(v[i].val  > v[j].val){
-        //             char c = v[i].val;
-        //             v[i].val = v[j].val;
-        //             v[j].val =c;
-        //         }
-        //     }
-        // }
-        // 插入排序
-        Voew tmp;
-        for (int i = 1; i < m; i++){
-            tmp.val = v[i].val;
-            tmp.index = v[i].index;
-            bool flag = false;
-            for(int j = i-1; j>=0; j--){
-                if(v[j].val  > tmp.val){
-                    //向后移位
-                    v[j+1].val = v[j].val;
-                    // v[j+1].index = v[j].index;
+            if(s[i] == 'a'){
+                index.push_back(i);
+                if(voew_num.find('a') != voew_num.end()){
+                    voew_num['a'] = voew_num['a']+1;
                 }else{
-                    v[j+1].val = tmp.val;
-                    // v[j].index = tmp.index;
-                    flag = true;
-                    break;
+                    voew_num.insert({'a', 1});
+                }
+            }else if( s[i] == 'e'){
+                index.push_back(i);
+                if(voew_num.find('e') != voew_num.end()){
+                    voew_num['e'] = voew_num['e']+1;
+                }else{
+                    voew_num.insert({'e', 1});
+                }
+            }else if( s[i] == 'i'){
+                index.push_back(i);
+                if(voew_num.find('i') != voew_num.end()){
+                    voew_num['i'] = voew_num['i']+1;
+                }else{
+                    voew_num.insert({'i', 1});
+                }
+            }else if( s[i] == 'o'){
+                index.push_back(i);
+                if(voew_num.find('o') != voew_num.end()){
+                    voew_num['o'] = voew_num['o']+1;
+                }else{
+                    voew_num.insert({'o', 1});
+                }
+            }else if( s[i] == 'u'){
+                index.push_back(i);
+                if(voew_num.find('u') != voew_num.end()){
+                    voew_num['u'] = voew_num['u']+1;
+                }else{
+                    voew_num.insert({'u', 1});
+                }
+            }else if( s[i] == 'A'){
+                index.push_back(i);
+                if(voew_num.find('A') != voew_num.end()){
+                    voew_num['A'] = voew_num['A']+1;
+                }else{
+                    voew_num.insert({'A', 1});
+                }
+            }else if( s[i] == 'E'){
+                index.push_back(i);
+                if(voew_num.find('E') != voew_num.end()){
+                    voew_num['E'] = voew_num['E']+1;
+                }else{
+                    voew_num.insert({'E', 1});
+                }
+            }else if( s[i] == 'I'){
+                index.push_back(i);
+                if(voew_num.find('I') != voew_num.end()){
+                    voew_num['I'] = voew_num['I']+1;
+                }else{
+                    voew_num.insert({'I', 1});
+                }
+            }else if (s[i] == 'O'){
+                index.push_back(i);
+                if(voew_num.find('O') != voew_num.end()){
+                    voew_num['O'] = voew_num['O']+1;
+                }else{
+                    voew_num.insert({'O', 1});
+                }
+            }else if( s[i] == 'U'){
+                index.push_back(i);
+                if(voew_num.find('U') != voew_num.end()){
+                    voew_num['U'] = voew_num['U']+1;
+                }else{
+                    voew_num.insert({'U', 1});
                 }
             }
-            if(!flag){
-                v[0].val = tmp.val;
-            }
+        }
+        int index_s = 0;
+        while(voew_num.find('A') != voew_num.end() && voew_num['A'] > 0){
+            s[index[index_s++]] = 'A';
+            voew_num['A']--;
+        }
+        while(voew_num.find('E') != voew_num.end() && voew_num['E'] > 0){
+            s[index[index_s++]] = 'E';
+            voew_num['E']--;
+        }
+        while(voew_num.find('I') != voew_num.end() && voew_num['I'] > 0){
+            s[index[index_s++]] = 'I';
+            voew_num['I']--;
+        }
+        while(voew_num.find('O') != voew_num.end() && voew_num['O'] > 0){
+            s[index[index_s++]] = 'O';
+            voew_num['O']--;
+        }
+        while(voew_num.find('U') != voew_num.end() && voew_num['U'] > 0){
+            s[index[index_s++]] = 'U';
+            voew_num['U']--;
         }
 
-        // for(vector<Voew>::iterator iter = v.begin(); iter != v.end();iter++){
-        //     cout << (iter->val) << ":" << (iter->index) << " ";
-        // }
-        // cout << endl;
-
-        for (int i = 0; i < m; i++){
-            s[v[i].index] = v[i].val;
+        while(voew_num.find('a') != voew_num.end() && voew_num['a'] > 0){
+            s[index[index_s++]] = 'a';
+            voew_num['a']--;
         }
+        while(voew_num.find('e') != voew_num.end() && voew_num['e'] > 0){
+            s[index[index_s++]] = 'e';
+            voew_num['e']--;
+        }
+        while(voew_num.find('i') != voew_num.end() && voew_num['i'] > 0){
+            s[index[index_s++]] = 'i';
+            voew_num['i']--;
+        }
+        while(voew_num.find('o') != voew_num.end() && voew_num['o'] > 0){
+            s[index[index_s++]] = 'o';
+            voew_num['o']--;
+        }
+        while(voew_num.find('u') != voew_num.end() && voew_num['u'] > 0){
+            s[index[index_s++]] = 'u';
+            voew_num['u']--;
+        }
+
         return s;
     }
 };
